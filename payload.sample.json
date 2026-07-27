@@ -1,0 +1,20 @@
+{
+  "invoiceNumber": "INV-1024",
+  "issueDate": "2026-07-27",
+  "dueDate": "2026-08-10",
+  "customer": {
+    "name": "Amara Okafor",
+    "email": "amara.okafor@example.com",
+    "phone": "+1 415 555 2671",
+    "address": "14 Marina Road, Suite 210"
+  },
+  "payment": {
+    "iban": "DE89370400440532013000",
+    "cardOnFile": "4242 4242 4242 4242"
+  },
+  "items": [
+    { "description": "Consulting retainer, July", "quantity": 1, "unitPrice": "$180.00" },
+    { "description": "Document automation setup", "quantity": 2, "unitPrice": "$30.00" }
+  ],
+  "total": "$240.00"
+}
