@@ -2,6 +2,7 @@
   "name": "sether-pritset-example",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "description": "Minimal tokenize -> AI step -> detokenize -> Pritset PDF generation workflow using @raeven-co/sether. PII never crosses the AI trust boundary; original values are used only at document generation time.",
   "type": "module",
   "engines": {

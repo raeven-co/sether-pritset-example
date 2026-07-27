@@ -1,8 +1,9 @@
 # Sether + Pritset — PII-safe AI-assisted document workflow
 
-A minimal, runnable example of the architecture discussed with Yurii Molchanov
-(Pritset): tokenize sensitive fields **before** the AI step, and use the
-original values **only** at document generation time.
+A minimal, runnable example of PII-safe AI-assisted document generation with
+a DOCX-template-to-PDF API ([Pritset](https://pritset.com)): tokenize
+sensitive fields **before** the AI step, and use the original values **only**
+at document generation time.
 
 ```text
 original JSON payload
@@ -47,8 +48,25 @@ Without Pritset credentials, stages 1-3 run fully (including a round-trip
 identity check asserting the restored payload is byte-identical to the
 original) and stage 4 prints the exact request it would send.
 
-To generate a real PDF, upload a matching DOCX template in the Pritset
-portal and set:
+### What success looks like
+
+The run prints each stage under a banner. Verify these four things:
+
+1. Under `[1 SETHER]`, the six sensitive fields (`name`, `email`, `phone`,
+   `address`, `iban`, `cardOnFile`) appear as tokens like
+   `<EMAIL_...>` — no original values remain.
+2. Under `[2 AI]`, the `draftCoverNote` echoes tokens, not real values —
+   proof the AI stage had nothing sensitive to leak.
+3. Under `[3 SETHER]`, the originals are back and the line
+   `round-trip identity check: PASS` is printed (the process exits non-zero
+   on FAIL).
+4. Under `[4 PRITSET]`, either a PDF is written or the exact pending request
+   is printed, and the payload it carries contains original values, never
+   tokens.
+
+### Generating a real PDF
+
+Upload a matching DOCX template in the Pritset portal and set:
 
 ```bash
 export PRITSET_ACCESS_TOKEN=...   # Profile page -> access token
@@ -56,6 +74,9 @@ export PRITSET_SECRET=...         # Profile page -> secret
 export PRITSET_TEMPLATE_ID=...    # Templates page
 npm start
 ```
+
+Or copy `.env.example` to `.env` and run
+`node --env-file=.env src/run.mjs` (Node 20.6+).
 
 The synthetic payload is `payload.sample.json` (invoice-shaped: customer
 name, email, phone, address, IBAN, card number — all fake). Swap it for any
