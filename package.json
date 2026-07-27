@@ -9,9 +9,15 @@
     "node": ">=18"
   },
   "scripts": {
-    "start": "node src/run.mjs"
+    "start": "tsx src/run.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@raeven-co/sether": "^0.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
   }
 }

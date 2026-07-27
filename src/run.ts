@@ -9,20 +9,24 @@
 // ============================================================================
 
 import { readFile } from 'node:fs/promises';
-import { tokenizePayload } from './sether-tokenize.mjs';
-import { runAiStep } from './ai-step.mjs';
-import { detokenize } from './sether-detokenize.mjs';
-import { generatePdf } from './pritset-generate.mjs';
+import { assertInvoicePayload } from './types.ts';
+import { tokenizePayload } from './sether-tokenize.ts';
+import { runAiStep } from './ai-step.ts';
+import { detokenize } from './sether-detokenize.ts';
+import { generatePdf } from './pritset-generate.ts';
 
-const banner = (label) => console.log(`\n${'='.repeat(72)}\n${label}\n${'='.repeat(72)}`);
+const banner = (label: string): void => {
+  console.log(`\n${'='.repeat(72)}\n${label}\n${'='.repeat(72)}`);
+};
 
-const original = JSON.parse(await readFile(new URL('../payload.sample.json', import.meta.url), 'utf8'));
+const raw = await readFile(new URL('../payload.sample.json', import.meta.url), 'utf8');
+const original = assertInvoicePayload(JSON.parse(raw));
 
 banner('ORIGINAL PAYLOAD (never sent to the AI provider)');
 console.log(JSON.stringify(original, null, 2));
 
 banner('[1 SETHER] Tokenized payload — this is all the AI step is given');
-const tokenized = await tokenizePayload(original);
+const tokenized = tokenizePayload(original);
 console.log(JSON.stringify(tokenized, null, 2));
 
 banner('[2 AI] AI-assisted template output — tokens flow through untouched');
@@ -30,10 +34,10 @@ const aiOutput = await runAiStep(tokenized);
 console.log(JSON.stringify(aiOutput, null, 2));
 
 banner('[3 SETHER] Restored payload + AI output — originals back, locally');
-const restoredPayload = await detokenize(tokenized);
-const restoredAiOutput = await detokenize(aiOutput);
+const restoredPayload = detokenize(tokenized);
+const restoredCoverNote = detokenize(aiOutput.draftCoverNote);
 console.log('payload:', JSON.stringify(restoredPayload, null, 2));
-console.log('aiOutput.draftCoverNote:', restoredAiOutput.draftCoverNote);
+console.log('aiOutput.draftCoverNote:', restoredCoverNote);
 
 const roundTripOk = JSON.stringify(restoredPayload) === JSON.stringify(original);
 console.log(`\nround-trip identity check: ${roundTripOk ? 'PASS' : 'FAIL'}`);
